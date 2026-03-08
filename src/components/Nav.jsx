@@ -69,14 +69,12 @@ export default function Nav({ view, setView, connectedWallet, isAdminWallet, onC
         gap: 20,
       }}>
 
-        {/* Left: Logo + wordmark */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: '1 1 0%', minWidth: 0 }}>
-          {/* Republic diamond icon */}
+
           <img src="/logo.png" alt="Republic Logo" width="28" height="28" style={{ objectFit: 'contain' }} />
           <span className="wordmark" style={{ color: 'var(--text-primary)' }}>RepublicAI</span>
         </div>
 
-        {/* Center: Nav links (desktop) */}
         <div className="hide-on-mobile" style={{ gap: 2 }}>
           {desktopNavItems.map(item => (
             <button
@@ -89,7 +87,6 @@ export default function Nav({ view, setView, connectedWallet, isAdminWallet, onC
           ))}
         </div>
 
-        {/* Right */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 10, flex: '1 1 0%', minWidth: 0 }}>
           
           {connectedWallet ? (
@@ -164,7 +161,6 @@ export default function Nav({ view, setView, connectedWallet, isAdminWallet, onC
         </div>
       </div>
 
-      {/* Mobile menu */}
       {menuOpen && (
         <div className="mobile-menu md:hidden" style={{ padding: '12px 20px 24px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
           {mobileNavItems.map(item => (

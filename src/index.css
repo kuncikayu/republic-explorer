@@ -9,22 +9,18 @@
   --bg-card-hover: #0e1215;
   --bg-glass: rgba(10, 13, 15, 0.75);
 
-  /* Republic green accent — matching the site gradient */
   --accent-green: #00ff6f;
   --accent-green-light: #7cffb5;
   --accent-green-glow: rgba(0, 255, 111, 0.18);
   --accent-green-border: rgba(0, 255, 111, 0.25);
 
-  /* Text */
   --text-primary: #ffffff;
   --text-secondary: rgba(221, 244, 255, 0.75);
   --text-muted: rgba(221, 244, 255, 0.35);
 
-  /* Borders — very subtle */
   --border: rgba(255, 255, 255, 0.06);
   --border-hover: rgba(0, 255, 111, 0.35);
 
-  /* Red for live badge */
   --accent-red: #ff3b5c;
 }
 
@@ -50,7 +46,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ─── SCROLLBAR ─────────────────────────────────── */
 ::-webkit-scrollbar {
   width: 5px;
 }
@@ -65,7 +60,6 @@ body {
   background: rgba(0, 255, 111, 0.4);
 }
 
-/* ─── SUBTLE BG GRADIENT ────────────────────────── */
 .page-bg {
   position: fixed;
   inset: 0;
@@ -103,14 +97,13 @@ body {
   }
 }
 
-/* ─── NAV ───────────────────────────────────────── */
 .nav-glass {
   position: relative;
   top: 16px;
   z-index: 100;
   width: calc(100% - 32px);
   max-width: 1200px;
-  margin: 0 auto 32px auto; /* Added bottom margin to push content down */
+  margin: 0 auto 32px auto;
   background: var(--bg-card);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
@@ -155,7 +148,6 @@ body {
   font-size: 16px;
 }
 
-/* ─── LIVE BADGE ─────────────────────────────────── */
 .live-badge {
   display: inline-flex;
   align-items: center;
@@ -191,7 +183,6 @@ body {
   }
 }
 
-/* ─── BUTTONS ────────────────────────────────────── */
 .btn-primary {
   display: inline-flex;
   align-items: center;
@@ -240,7 +231,6 @@ body {
   background: rgba(255, 255, 255, 0.07);
 }
 
-/* External link button matches Republic site whitepaper btn */
 .ext-link-btn {
   display: inline-flex;
   align-items: center;
@@ -266,7 +256,6 @@ body {
   transform: translateY(-1px);
 }
 
-/* ─── HERO ───────────────────────────────────────── */
 .hero {
   position: relative;
   overflow: hidden;
@@ -295,7 +284,7 @@ body {
   font-size: clamp(2.2rem, 5vw, 4rem);
   letter-spacing: -0.04em;
   line-height: 1.08;
-  /* Metallic white gradient matching Republic site */
+
   background: linear-gradient(180deg, #ffffff 30%, #aaaaaa 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -309,7 +298,6 @@ body {
   background-clip: text;
 }
 
-/* ─── STAT BAR ───────────────────────────────────── */
 .stat-bar {
   background: var(--bg-secondary);
   border-top: 1px solid var(--border);
@@ -341,7 +329,6 @@ body {
   font-weight: 500;
 }
 
-/* ─── SEARCH ─────────────────────────────────────── */
 .search-container {
   position: relative;
   max-width: 540px;
@@ -381,7 +368,6 @@ body {
   pointer-events: none;
 }
 
-/* ─── CATEGORY PILLS ─────────────────────────────── */
 .category-pill {
   padding: 5px 14px;
   border-radius: 50px;
@@ -409,7 +395,6 @@ body {
   box-shadow: 0 0 12px rgba(0, 255, 111, 0.1);
 }
 
-/* ─── PROJECT CARDS ──────────────────────────────── */
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -458,7 +443,6 @@ body {
   );
 }
 
-/* Card overlay on hover */
 .card-overlay {
   position: absolute;
   inset: 0;
@@ -476,7 +460,6 @@ body {
   opacity: 1;
 }
 
-/* ─── CATEGORY BADGES ────────────────────────────── */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -490,7 +473,6 @@ body {
   font-family: "Inter", sans-serif;
 }
 
-/* Re-mapped to green-family palette, matching brand */
 .badge-defi {
   background: rgba(0, 255, 111, 0.1);
   color: #00ff6f;
@@ -537,7 +519,6 @@ body {
   border: 1px solid rgba(0, 180, 255, 0.25);
 }
 
-/* ─── STATUS DOTS ────────────────────────────────── */
 .status-dot {
   display: inline-flex;
   align-items: center;
@@ -598,7 +579,6 @@ body {
   }
 }
 
-/* ─── TAGS ───────────────────────────────────────── */
 .tag {
   display: inline-block;
   padding: 2px 8px;
@@ -611,7 +591,6 @@ body {
   font-family: "Inter", sans-serif;
 }
 
-/* --- Interchain Wallet Modal Custom Grid Override --- */
 [data-has-list-wallets="true"] {
   display: grid !important;
   grid-template-columns: repeat(2, 1fr) !important;
@@ -659,13 +638,11 @@ body {
   width: 100% !important;
 }
 
-/* Hide the little secondary sub-text / arrow icons completely */
 [data-has-list-wallets="true"] span + span,
 [data-has-list-wallets="true"] svg + svg {
   display: none !important;
 }
 
-/* ─── SOCIAL ICONS ───────────────────────────────── */
 .social-icon {
   display: inline-flex;
   align-items: center;
@@ -686,7 +663,6 @@ body {
   background: rgba(0, 255, 111, 0.06);
 }
 
-/* ─── METRIC CHIP ────────────────────────────────── */
 .metric-chip {
   display: flex;
   align-items: center;
@@ -697,7 +673,6 @@ body {
   border-radius: 10px;
 }
 
-/* ─── LOGO ICON ──────────────────────────────────── */
 .logo-icon {
   width: 44px;
   height: 44px;
@@ -712,7 +687,6 @@ body {
   letter-spacing: -0.03em;
 }
 
-/* ─── MODAL ──────────────────────────────────────── */
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -761,7 +735,6 @@ body {
   }
 }
 
-/* ─── FORMS ──────────────────────────────────────── */
 .form-group {
   display: flex;
   flex-direction: column;
@@ -827,7 +800,6 @@ body {
   border-color: rgba(255, 59, 92, 0.4);
 }
 
-/* ─── SKELETON ───────────────────────────────────── */
 .skeleton {
   background: linear-gradient(
     90deg,
@@ -849,7 +821,6 @@ body {
   }
 }
 
-/* ─── ENTRY ANIMATIONS ───────────────────────────── */
 .fade-in {
   animation: fadeInUp 0.4s ease both;
 }
@@ -875,7 +846,6 @@ body {
   animation-delay: 0.12s;
 }
 
-/* ─── WALLET CONNECT ─────────────────────────────── */
 .wallet-card {
   display: flex;
   align-items: center;
@@ -922,7 +892,6 @@ body {
   animation-delay: 0.48s;
 }
 
-/* ─── SUCCESS TOAST ──────────────────────────────── */
 .success-toast {
   display: flex;
   align-items: center;
@@ -934,13 +903,11 @@ body {
   animation: fadeInUp 0.3s ease;
 }
 
-/* ─── FOOTER ─────────────────────────────────────── */
 .footer {
   background: var(--bg-secondary);
   border-top: 1px solid var(--border);
 }
 
-/* ─── MOBILE MENU ────────────────────────────────── */
 .mobile-menu {
   background: rgba(5, 6, 7, 0.97);
   border-top: 1px solid var(--border);
@@ -959,13 +926,11 @@ body {
   }
 }
 
-/* ─── DIVIDER ────────────────────────────────────── */
 .divider {
   height: 1px;
   background: var(--border);
 }
 
-/* ─── EMPTY STATE ────────────────────────────────── */
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -976,7 +941,6 @@ body {
   text-align: center;
 }
 
-/* ─── SECTION HEADER ─────────────────────────────── */
 .section-header {
   font-family: "Inter", sans-serif;
   font-weight: 800;
@@ -988,7 +952,6 @@ body {
   background-clip: text;
 }
 
-/* ─── RESPONSIVE & UTILS ─────────────────────────── */
 .hide-on-mobile {
   display: flex;
 }
@@ -996,8 +959,8 @@ body {
   display: none;
 }
 .no-scrollbar {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 @media (max-width: 1024px) {

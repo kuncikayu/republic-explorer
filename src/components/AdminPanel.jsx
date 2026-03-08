@@ -6,7 +6,7 @@ import ProjectModal from './ProjectModal.jsx';
 export default function AdminPanel({ projects, onApprove, onDecline, onHide }) {
   const [tab, setTab] = useState('pending');
   const [selectedProject, setSelectedProject] = useState(null);
-  const [confirmAction, setConfirmAction] = useState(null); // { type: 'approve'|'decline', project }
+  const [confirmAction, setConfirmAction] = useState(null);
   
   const pending = projects.filter(p => p.approvalStatus === 'pending');
   const approved = projects.filter(p => p.approvalStatus === 'approved');
@@ -90,13 +90,13 @@ export default function AdminPanel({ projects, onApprove, onDecline, onHide }) {
         </div>
       )}
 
-      {/* Project detail modal */}
-      {selectedProject && (
+
+        {selectedProject && (
         <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} />
       )}
 
-      {/* Inline confirm dialog */}
-      {confirmAction && (
+
+        {confirmAction && (
         <div style={{
           position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999

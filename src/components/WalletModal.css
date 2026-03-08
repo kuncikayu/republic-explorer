@@ -1,4 +1,3 @@
-/* ── Overlay ─────────────────────────────────────────────────────────────── */
 .rw-overlay {
   position: fixed;
   inset: 0;
@@ -21,9 +20,8 @@
   }
 }
 
-/* ── Panel ───────────────────────────────────────────────────────────────── */
 .rw-panel {
-  background: var(--bg-secondary); /* Dark but elevated from primary */
+  background: var(--bg-secondary);
   border: 1px solid var(--border);
   border-radius: 16px;
   width: min(380px, 92vw);
@@ -45,11 +43,10 @@
   }
 }
 
-/* ── Header ──────────────────────────────────────────────────────────────── */
 .rw-header {
   display: flex;
   align-items: center;
-  justify-content: center; /* Center the title like in the screenshot */
+  justify-content: center;
   padding: 24px 24px 20px 24px;
   position: relative;
 }
@@ -86,7 +83,6 @@
   color: var(--text-primary);
 }
 
-/* ── Body ────────────────────────────────────────────────────────────────── */
 .rw-body {
   padding: 0 24px;
   display: flex;
@@ -94,7 +90,6 @@
   gap: 12px;
 }
 
-/* ── Top Grid (Keplr, Leap) ──────────────────────────────────────────────── */
 .rw-grid-top {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -151,7 +146,6 @@
   color: var(--accent-green);
 }
 
-/* ── Bottom List (Other Wallets) ─────────────────────────────────────────── */
 .rw-list-bottom {
   display: flex;
   flex-direction: column;

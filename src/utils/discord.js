@@ -1,9 +1,5 @@
 import { supabase } from '../supabase.js';
 
-/**
- * Sends a notification via Supabase Edge Function.
- * This keeps the Webhook URL hidden on the server.
- */
 async function invokeNotify(project, type) {
     try {
         const { data, error } = await supabase.functions.invoke('discord-notify', {

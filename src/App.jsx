@@ -269,6 +269,7 @@ export default function App() {
     showToast('Wallet disconnected', 'success');
   };
 
+  const [dismissedBanners, setDismissedBanners] = useState(new Set());
   const [config, setConfig] = useState({ ADMIN_WALLET: '', REPUBLIC_RPC_URL: '' });
 
   useEffect(() => {
@@ -290,7 +291,7 @@ export default function App() {
 
   const sanitize = (text) => {
     if (!text) return '';
-    // Simple regex to strip HTML tags for an extra layer of defense
+
     return text.toString().replace(/<[^>]*>?/gm, '');
   };
 
@@ -357,10 +358,10 @@ export default function App() {
   const fetchProjects = useCallback(async () => {
     setLoading(true);
     try {
-      // Determine which columns to fetch based on admin status
+
       const isAdmin = connectedWallet?.address === config.ADMIN_WALLET;
       
-      // 1. Fetch public data (Conditionally include wallet_address ONLY for admin)
+
       const columns = `
         id, name, short_desc, full_desc, category, tags, 
         website, twitter, discord, github, logo_color, 
@@ -380,7 +381,7 @@ export default function App() {
         return;
       }
 
-      // 2. Fetch owned projects for the current user to set isOwner flag
+
       let ownedIds = new Set();
       if (connectedWallet) {
         const { data: userData } = await supabase
@@ -414,10 +415,7 @@ export default function App() {
           metricValue: p.metric_value,
           lastUpdated: p.last_updated ? new Date(p.last_updated).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '',
           approvalStatus: p.approval_status,
-          // Privacy logic: 
-          // 1. If admin, use the fetched wallet_address
-          // 2. If owner, use their own connected address
-          // 3. Otherwise, hide it (undefined)
+
           walletAddress: isAdmin ? p.wallet_address : (isOwner ? connectedWallet.address : undefined),
           isOwner: isOwner
         };

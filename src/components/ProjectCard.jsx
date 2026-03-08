@@ -67,7 +67,7 @@ export default function ProjectCard({ project, onClick, animDelay, connectedWall
       style={{ animationDelay: `${animDelay}s` }}
       onClick={() => onClick(project)}
     >
-      {/* hover overlay */}
+
       <div className="card-overlay">
         <span style={{
           fontFamily: 'Inter, sans-serif',
@@ -81,7 +81,7 @@ export default function ProjectCard({ project, onClick, animDelay, connectedWall
         </span>
       </div>
 
-      {/* Header */}
+
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
         <Logo project={project} />
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -131,7 +131,7 @@ export default function ProjectCard({ project, onClick, animDelay, connectedWall
         </div>
       </div>
 
-      {/* Description */}
+
       <p style={{ 
         fontSize: 13, 
         color: 'var(--text-secondary)', 
@@ -149,21 +149,21 @@ export default function ProjectCard({ project, onClick, animDelay, connectedWall
         {project.shortDesc}
       </p>
 
-      {/* Preview Image */}
+
       {project.imageUrl && (
         <div style={{ width: '100%', display: 'flex', justifyContent: 'center', margin: '8px 0 12px 0' }}>
           <img src={project.imageUrl} alt={`${project.name} preview`} style={{ maxWidth: '100%', maxHeight: 200, borderRadius: 8, objectFit: 'contain' }} />
         </div>
       )}
 
-      {/* Tags */}
+
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
         {project.tags.map(tag => (
           <span key={tag} className="tag">{tag}</span>
         ))}
       </div>
 
-      {/* Metric */}
+
       <div className="metric-chip">
         <TrendingUp size={13} style={{ color: 'var(--accent-green)', flexShrink: 0 }} />
         <span style={{ fontSize: 11, color: 'var(--text-muted)', letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 500 }}>
@@ -181,7 +181,7 @@ export default function ProjectCard({ project, onClick, animDelay, connectedWall
         </span>
       </div>
 
-      {/* Social + date */}
+
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }} onClick={stopProp}>
         <SocialLinks project={project} stopProp={stopProp} />
         <span style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: 'Martian Mono, monospace' }}>
@@ -189,7 +189,7 @@ export default function ProjectCard({ project, onClick, animDelay, connectedWall
         </span>
       </div>
       
-      {/* Admin Action Buttons */}
+
       {actionButtons && (
         <div style={{ marginTop: 'auto', paddingTop: 16, position: 'relative', zIndex: 10 }} onClick={stopProp}>
           {actionButtons}

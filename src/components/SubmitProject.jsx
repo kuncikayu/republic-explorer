@@ -151,7 +151,7 @@ export default function SubmitProject({ onSubmit, connectedWallet, onConnectClic
       setCoverFile(null);
     } catch (err) {
       console.error('Submit error details:', err);
-      // Catch Supabase Postgres exception messages specifically (rate limit, sanitization)
+
       const errorMsg = err.message || 'Failed to submit project. Please try again.';
       if (showToast) {
         showToast(errorMsg, 'error');

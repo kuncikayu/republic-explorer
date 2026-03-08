@@ -57,7 +57,7 @@ export default function UpdateProject({ projects, onUpdate, connectedWallet, onC
   const [success, setSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Filter existing projects by wallet address
+
   const userProjects = useMemo(() => {
     if (!connectedWallet) return [];
     return projects.filter(p => p.isOwner);
@@ -148,7 +148,7 @@ export default function UpdateProject({ projects, onUpdate, connectedWallet, onC
 
       {!form ? (
         <>
-          {/* Search bar */}
+
           {userProjects.length > 3 && (
             <div style={{ marginBottom: 16 }}>
               <div className="search-container" style={{ maxWidth: '100%' }}>
@@ -163,7 +163,7 @@ export default function UpdateProject({ projects, onUpdate, connectedWallet, onC
             </div>
           )}
 
-          {/* Project list */}
+
           {userProjects.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '60px 24px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 16 }}>
               <Search size={40} style={{ color: 'var(--text-muted)', opacity: 0.3, marginBottom: 16 }} />
@@ -212,7 +212,7 @@ export default function UpdateProject({ projects, onUpdate, connectedWallet, onC
         </>
       ) : null}
 
-      {/* Edit form */}
+
       {form ? (
         <div style={{ animation: 'fadeInUp 0.3s ease' }}>
           <button

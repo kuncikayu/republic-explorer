@@ -1,18 +1,3 @@
-/*
-  Supabase Storage Setup Instructions
-  -- 1. Buat bucket baru di Supabase Storage: "project-logos"
-  -- 2. Set bucket visibility: PUBLIC
-  -- 3. Jalankan RLS Policy berikut di SQL Editor:
-  --
-  --   CREATE POLICY "Allow anon uploads"
-  --   ON storage.objects FOR INSERT TO anon
-  --   WITH CHECK (bucket_id = 'project-logos');
-  --
-  --   CREATE POLICY "Allow public read"
-  --   ON storage.objects FOR SELECT TO public
-  --   USING (bucket_id = 'project-logos');
-*/
-
 import { useState, useRef, useEffect } from 'react';
 import { UploadCloud } from 'lucide-react';
 

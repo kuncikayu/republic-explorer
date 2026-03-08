@@ -20,7 +20,6 @@ export default function ProjectModal({ project, onClose }) {
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-panel" onClick={e => e.stopPropagation()}>
 
-        {/* Header */}
         <div style={{
           padding: '24px 28px 20px',
           borderBottom: '1px solid var(--border)',
@@ -72,7 +71,7 @@ export default function ProjectModal({ project, onClose }) {
 
         <div style={{ padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: 20 }}>
 
-          {/* Short desc */}
+
           <p style={{ 
             fontSize: 14, 
             color: 'var(--accent-green)', 
@@ -85,14 +84,14 @@ export default function ProjectModal({ project, onClose }) {
             {project.shortDesc}
           </p>
 
-          {/* Preview Image in Modal */}
+
           {project.imageUrl && (
             <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
               <img src={project.imageUrl} alt={`${project.name} preview`} style={{ maxWidth: '100%', maxHeight: 400, borderRadius: 12, objectFit: 'contain' }} />
             </div>
           )}
 
-          {/* Full desc */}
+
           <p style={{ 
             fontSize: 13, 
             color: 'var(--text-secondary)', 
@@ -108,7 +107,7 @@ export default function ProjectModal({ project, onClose }) {
 
           <div style={{ height: 1, background: 'var(--border)' }} />
 
-          {/* Metric */}
+
           <div>
             <p style={{ fontSize: 10, letterSpacing: '0.08em', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 10, fontWeight: 600 }}>
               Key Metric
@@ -134,7 +133,7 @@ export default function ProjectModal({ project, onClose }) {
             </div>
           </div>
 
-          {/* Tags */}
+
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
               <Tag size={11} style={{ color: 'var(--text-muted)' }} />
@@ -145,7 +144,7 @@ export default function ProjectModal({ project, onClose }) {
             </div>
           </div>
 
-          {/* Links */}
+
           <div>
             <p style={{ fontSize: 10, letterSpacing: '0.08em', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 10, fontWeight: 600 }}>Links</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
@@ -174,7 +173,6 @@ export default function ProjectModal({ project, onClose }) {
             </div>
           </div>
 
-          {/* Last updated */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, paddingTop: 4, borderTop: '1px solid var(--border)' }}>
             <Calendar size={11} style={{ color: 'var(--text-muted)' }} />
             <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'Martian Mono, monospace' }}>

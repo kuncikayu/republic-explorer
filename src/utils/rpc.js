@@ -1,15 +1,3 @@
-/**
- * Republic RPC Utility
- * 
- * All functions are ready to be wired to the real RPC endpoint.
- * Configuration is now fetched dynamically from Supabase to keep endpoints secret.
- */
-
-// We don't read from import.meta.env anymore. 
-// Values will be passed or fetched as needed.
-
-// ─── GPU Miner Mock Data ──────────────────────────────────────────────────────
-
 const MOCK_LEADERBOARD = [
     { rank: 1, address: 'rai1q8r4f8lpn9jx5qzfvs7dhk3m2g6wkp4tndrqcu', totalJobs: 48392, submitJobs: 47901, lastSeen: '2026-03-08T05:41:00Z' },
     { rank: 2, address: 'rai1qd7xl2zp4yknt0r3esmfv8nwachg5q3fklmhdej', totalJobs: 41205, submitJobs: 40110, lastSeen: '2026-03-08T05:39:12Z' },
@@ -32,7 +20,6 @@ const MOCK_RECENT_ACTIVITY = [
     { block: 487331, miner: 'rai1qd7xl2zp4yknt0r3esmfv8nwachg5q3fklmhdej', type: 'Submit', status: 'success', time: '2026-03-08T05:40:50Z' },
 ];
 
-// ─── Validator Mock Data ──────────────────────────────────────────────────────
 
 const MOCK_VALIDATORS = [
     { rank: 1, moniker: 'Republic Core', identity: 'https://api.dicebear.com/7.x/identicon/svg?seed=core', votingPower: 125400, share: '10.2%', commission: '5%', uptime: '100%', status: 'Active' },
@@ -57,11 +44,11 @@ const MOCK_BLOCKS = [
     { height: '1,245,888', proposer: 'Nebula Stake', time: '22s ago', hash: '0x...i9j0' },
 ];
 
-// ─── Simulated network delay ──────────────────────────────────────────────────
+
 
 const delay = (ms) => new Promise((r) => setTimeout(r, ms));
 
-// ─── GPU API Functions ────────────────────────────────────────────────────────
+
 
 export async function fetchLeaderboard() {
     await delay(800);
@@ -78,7 +65,7 @@ export async function fetchRecentActivity() {
     return MOCK_RECENT_ACTIVITY;
 }
 
-// ─── Validator API Functions ──────────────────────────────────────────────────
+
 
 export async function fetchValidators() {
     await delay(600);

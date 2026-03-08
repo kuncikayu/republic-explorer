@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { fetchLeaderboard, fetchNetworkStats, fetchRecentActivity } from '../utils/rpc.js';
 import { Activity, Trophy, BarChart2, Users, Cpu, CheckCircle2, XCircle, RefreshCw, Loader2, Hash } from 'lucide-react';
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function truncAddr(addr) {
   if (!addr) return '—';
@@ -27,7 +26,6 @@ function fmtNum(n) {
   return Number(n).toLocaleString();
 }
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
 
 function StatCard({ icon: Icon, label, value, sub, color = 'var(--accent-green)', loading }) {
   return (
@@ -46,7 +44,7 @@ function StatCard({ icon: Icon, label, value, sub, color = 'var(--accent-green)'
       onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--accent-green-border)'}
       onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}
     >
-      {/* Icon + Label row */}
+
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <div style={{
           width: 28, height: 28, borderRadius: 7,
@@ -69,7 +67,7 @@ function StatCard({ icon: Icon, label, value, sub, color = 'var(--accent-green)'
         </span>
       </div>
 
-      {/* Value */}
+
       {loading ? (
         <div style={{ height: 26, width: '70%', background: 'rgba(255,255,255,0.06)', borderRadius: 6, animation: 'pulse 1.5s ease infinite' }} />
       ) : (
@@ -88,7 +86,7 @@ function StatCard({ icon: Icon, label, value, sub, color = 'var(--accent-green)'
         </span>
       )}
 
-      {/* Sub label */}
+
       {sub && <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: -4 }}>{sub}</span>}
     </div>
   );
@@ -109,7 +107,6 @@ function SkeletonRow({ cols = 5 }) {
 const RANK_COLORS = { 1: '#FFD700', 2: '#C0C0C0', 3: '#CD7F32' };
 const RANK_EMOJIS = { 1: '🥇', 2: '🥈', 3: '🥉' };
 
-// ─── Tab: Leaderboard ─────────────────────────────────────────────────────────
 
 function LeaderboardTab({ loading, data, error, onRetry }) {
   const thStyle = {
@@ -199,7 +196,6 @@ function LeaderboardTab({ loading, data, error, onRetry }) {
   );
 }
 
-// ─── Tab: Stats ───────────────────────────────────────────────────────────────
 
 function StatsTab({ loadingStats, loadingActivity, stats, activity, errorStats, errorActivity, onRetry }) {
   const thStyle = {
@@ -216,7 +212,7 @@ function StatsTab({ loadingStats, loadingActivity, stats, activity, errorStats, 
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
-      {/* Stat Cards Grid */}
+
       <div>
         <h3 style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800, fontSize: 22, color: 'var(--text-primary)', marginBottom: 16 }}>Network Overview</h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
@@ -229,7 +225,7 @@ function StatsTab({ loadingStats, loadingActivity, stats, activity, errorStats, 
         </div>
       </div>
 
-      {/* Recent Activity Table */}
+
       <div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
           <div>
@@ -303,7 +299,6 @@ function StatsTab({ loadingStats, loadingActivity, stats, activity, errorStats, 
   );
 }
 
-// ─── Error State ──────────────────────────────────────────────────────────────
 
 function ErrorState({ message, onRetry }) {
   return (
@@ -320,7 +315,6 @@ function ErrorState({ message, onRetry }) {
   );
 }
 
-// ─── Main Component ───────────────────────────────────────────────────────────
 
 const TABS = [
   { id: 'stats', label: 'Stats & Activity', icon: Activity },
@@ -348,7 +342,7 @@ export default function GpuMiner() {
   const loadAll = useCallback(async (isManual = false) => {
     if (isManual) setIsRefreshing(true);
 
-    // Leaderboard
+
     setLoadingLeaderboard(true);
     setErrorLeaderboard(null);
     try {
@@ -360,7 +354,7 @@ export default function GpuMiner() {
       setLoadingLeaderboard(false);
     }
 
-    // Stats
+
     setLoadingStats(true);
     setErrorStats(null);
     try {
@@ -372,7 +366,7 @@ export default function GpuMiner() {
       setLoadingStats(false);
     }
 
-    // Activity
+
     setLoadingActivity(true);
     setErrorActivity(null);
     try {
@@ -397,7 +391,7 @@ export default function GpuMiner() {
   return (
     <div style={{ maxWidth: 1200, margin: '0 auto', padding: '40px 24px', animation: 'fadeIn 0.3s ease' }}>
 
-      {/* Page Header */}
+
       <div style={{ marginBottom: 32 }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '4px 12px', borderRadius: 20, background: 'rgba(0,255,111,0.08)', border: '1px solid rgba(0,255,111,0.15)', marginBottom: 12 }}>
           <Cpu size={11} style={{ color: 'var(--accent-green)' }} />
@@ -426,7 +420,7 @@ export default function GpuMiner() {
         </div>
       </div>
 
-      {/* Tab Navigation */}
+
       <div style={{ display: 'flex', gap: 4, marginBottom: 28, background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)', borderRadius: 12, padding: 4, width: 'fit-content' }}>
         {TABS.map(tab => (
           <button
@@ -448,7 +442,7 @@ export default function GpuMiner() {
         ))}
       </div>
 
-      {/* Tab Content */}
+
       {activeTab === 'leaderboard' && (
         <LeaderboardTab
           loading={loadingLeaderboard}

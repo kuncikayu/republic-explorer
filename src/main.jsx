@@ -14,7 +14,7 @@ import WalletModal from './components/WalletModal.jsx'
 import './index.css'
 
 const republicChain = {
-  // camelCase fields required by interchain-kit internally
+
   chainName: 'republicaitestnet',
   chainId: 'raitestnet_77701-1',
   prettyName: 'Republic AI Testnet',
@@ -24,7 +24,7 @@ const republicChain = {
   bech32Prefix: 'rai',
   keyAlgos: ['ethsecp256k1'],
   slip44: 60,
-  // snake_case aliases for compatibility with chain-registry types
+
   chain_name: 'republicaitestnet',
   chain_id: 'raitestnet_77701-1',
   pretty_name: 'Republic AI Testnet',

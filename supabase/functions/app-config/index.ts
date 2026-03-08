@@ -11,9 +11,6 @@ serve(async (req) => {
   }
 
   try {
-    // We return configuration that should be dynamic but not necessarily secret
-    // such as RPC URLs or Admin Addresses.
-    // These are pulled from Supabase Secrets (Vault).
     const config = {
       ADMIN_WALLET: Deno.env.get('ADMIN_WALLET'),
       REPUBLIC_RPC_URL: Deno.env.get('REPUBLIC_RPC_URL'),

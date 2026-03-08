@@ -81,7 +81,7 @@ export default function Validator() {
   return (
     <div style={{ padding: '40px 24px', maxWidth: 1240, margin: '80px auto 0 auto', animation: 'fadeIn 0.5s ease' }}>
       
-      {/* Header Section */}
+
       <div style={{ marginBottom: 32 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
           <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--accent-green)', boxShadow: '0 0 12px var(--accent-green)' }}></div>
@@ -92,10 +92,10 @@ export default function Validator() {
         </h2>
       </div>
 
-      {/* Internal Navigation */}
+
       {renderTabs()}
 
-      {/* Validators Tab */}
+
       {activeTab === 'validators' && (
         <div className="fade-in">
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
@@ -160,7 +160,7 @@ export default function Validator() {
         </div>
       )}
 
-      {/* Blocks Tab */}
+
       {activeTab === 'blocks' && (
         <div className="fade-in" style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 24 }}>
           <div style={{ background: 'var(--bg-card)', borderRadius: 24, border: '1px solid var(--border)', padding: '32px' }}>
@@ -209,7 +209,7 @@ export default function Validator() {
         </div>
       )}
 
-      {/* Uptime Tab */}
+
       {activeTab === 'uptime' && (
         <div className="fade-in">
           <div style={{ background: 'var(--bg-card)', borderRadius: 24, border: '1px solid var(--border)', padding: '32px' }}>
