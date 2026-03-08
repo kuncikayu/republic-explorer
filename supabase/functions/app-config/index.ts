@@ -11,8 +11,12 @@ serve(async (req) => {
   }
 
   try {
+    const { wallet } = await req.json().catch(() => ({}));
+    const adminWallet = Deno.env.get('ADMIN_WALLET');
+    const isAdmin = wallet && adminWallet && wallet.toLowerCase() === adminWallet.toLowerCase();
+
     const config = {
-      ADMIN_WALLET: Deno.env.get('ADMIN_WALLET'),
+      isAdmin: !!isAdmin,
       REPUBLIC_RPC_URL: Deno.env.get('REPUBLIC_RPC_URL'),
     }
 

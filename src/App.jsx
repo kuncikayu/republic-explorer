@@ -270,12 +270,14 @@ export default function App() {
   };
 
   const [dismissedBanners, setDismissedBanners] = useState(new Set());
-  const [config, setConfig] = useState({ ADMIN_WALLET: '', REPUBLIC_RPC_URL: '' });
+  const [config, setConfig] = useState({ isAdmin: false, REPUBLIC_RPC_URL: '' });
 
   useEffect(() => {
     const fetchConfig = async () => {
       try {
-        const { data, error } = await supabase.functions.invoke('app-config');
+        const { data, error } = await supabase.functions.invoke('app-config', {
+          body: { wallet: connectedWallet?.address }
+        });
         if (error) throw error;
         if (data) setConfig(data);
       } catch (err) {
@@ -283,9 +285,9 @@ export default function App() {
       }
     };
     fetchConfig();
-  }, []);
+  }, [connectedWallet?.address]);
 
-  const isAdminWallet = connectedWallet?.address === config.ADMIN_WALLET;
+  const isAdminWallet = config.isAdmin;
 
   const showToast = (message, type = 'success') => setToastMessage({ message, type });
 
@@ -359,7 +361,7 @@ export default function App() {
     setLoading(true);
     try {
 
-      const isAdmin = connectedWallet?.address === config.ADMIN_WALLET;
+      const isAdmin = config.isAdmin;
       
 
       const columns = `
@@ -427,7 +429,7 @@ export default function App() {
     } finally {
       setLoading(false);
     }
-  }, [connectedWallet, config.ADMIN_WALLET]);
+  }, [connectedWallet, config.isAdmin]);
 
   useEffect(() => { 
     fetchProjects(); 
