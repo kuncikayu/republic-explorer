@@ -1,0 +1,54 @@
+{
+    "chain_name": "republicaitestnet",
+    "chain_id": "raitestnet_77701-1",
+    "pretty_name": "Republic AI Testnet",
+    "chain_type": "cosmos",
+    "status": "live",
+    "network_type": "testnet",
+    "bech32_prefix": "rai",
+    "daemon_name": "republicd",
+    "node_home": "$HOME/.republic",
+    "key_algos": [
+        "ethsecp256k1"
+    ],
+    "slip44": 60,
+    "fees": {
+        "fee_tokens": [
+            {
+                "denom": "arai",
+                "fixed_min_gas_price": 10000000000,
+                "low_gas_price": 10000000000,
+                "average_gas_price": 25000000000,
+                "high_gas_price": 40000000000
+            }
+        ]
+    },
+    "staking": {
+        "staking_tokens": [
+            {
+                "denom": "arai"
+            }
+        ]
+    },
+    "apis": {
+        "rpc": [
+            {
+                "address": "https://rpc.republicai.io",
+                "provider": "Republic AI"
+            }
+        ],
+        "rest": [
+            {
+                "address": "https://rest.republicai.io",
+                "provider": "Republic AI"
+            }
+        ]
+    },
+    "explorers": [
+        {
+            "kind": "republic-explorer",
+            "url": "https://republicai.io",
+            "tx_page": "https://republicai.io/tx/${txHash}"
+        }
+    ]
+}

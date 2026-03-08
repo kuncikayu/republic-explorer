@@ -1,0 +1,45 @@
+{
+  "name": "republic-explorer",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@chain-registry/v2": "^1.71.237",
+    "@interchain-kit/coin98-extension": "^0.10.0",
+    "@interchain-kit/compass-extension": "^0.10.0",
+    "@interchain-kit/cosmostation-extension": "^0.10.0",
+    "@interchain-kit/exodus-extension": "^0.10.0",
+    "@interchain-kit/keplr-extension": "^0.10.0",
+    "@interchain-kit/leap-extension": "^0.10.0",
+    "@interchain-kit/okx-extension": "^0.10.0",
+    "@interchain-kit/react": "latest",
+    "@interchain-kit/station-extension": "^0.10.0",
+    "@interchain-kit/trust-extension": "^0.10.0",
+    "@interchain-kit/xdefi-extension": "^0.10.0",
+    "@interchain-ui/react": "^1.23.0",
+    "@react-icons/all-files": "^4.1.0",
+    "@supabase/supabase-js": "^2.98.0",
+    "gsap": "^3.14.2",
+    "lucide-react": "^0.460.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.16",
+    "vite": "^6.0.3",
+    "vite-plugin-node-polyfills": "^0.22.0"
+  },
+  "overrides": {
+    "string_decoder": "^1.3.0"
+  }
+}
