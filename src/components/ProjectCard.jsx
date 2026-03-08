@@ -101,8 +101,8 @@ export default function ProjectCard({ project, onClick, animDelay, connectedWall
               {project.name}
             </h3>
             <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
-              {connectedWallet && connectedWallet.address === project.walletAddress && (
-                <span title="Your Project" style={{ color: 'var(--accent-green)', display: 'flex' }}>
+              {project.isOwner && (
+                <span title={`You are the owner of ${project.name}`} style={{ color: 'var(--accent-green)', display: 'flex' }}>
                   <Wallet size={14} />
                 </span>
               )}

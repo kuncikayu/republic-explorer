@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { supabase } from './supabase.js';
 import { Search, Filter, Github, Twitter, MessageCircle, AlertCircle } from 'lucide-react';
 import Nav from './components/Nav.jsx';
@@ -13,6 +13,7 @@ import { useChain } from '@interchain-kit/react'
 import { useTheme } from '@interchain-ui/react';
 import { sendAdminApproveNotification, sendAdminDeclineNotification } from './utils/discord.js';
 import GpuMiner from './components/GpuMiner.jsx';
+import Validator from './components/Validator.jsx';
 
 function SkeletonCard() {
   return (
@@ -252,7 +253,10 @@ export default function App() {
 
 
   const { connect, disconnect, address, status, wallet } = useChain('republicaitestnet');
-  const connectedWallet = status === 'Connected' && address ? { address, walletType: wallet?.name || 'Wallet' } : null;
+  
+  const connectedWallet = useMemo(() => {
+    return status === 'Connected' && address ? { address, walletType: wallet?.name || 'Wallet' } : null;
+  }, [address, status, wallet?.name]);
 
   const [toastMessage, setToastMessage] = useState(null);
 
@@ -265,12 +269,30 @@ export default function App() {
     showToast('Wallet disconnected', 'success');
   };
 
-  const [dismissedBanners, setDismissedBanners] = useState(new Set());
+  const [config, setConfig] = useState({ ADMIN_WALLET: '', REPUBLIC_RPC_URL: '' });
 
-  const ADMIN_WALLET = import.meta.env.VITE_ADMIN_WALLET;
-  const isAdminWallet = connectedWallet?.address === ADMIN_WALLET;
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke('app-config');
+        if (error) throw error;
+        if (data) setConfig(data);
+      } catch (err) {
+        console.warn('Failed to fetch app config:', err.message);
+      }
+    };
+    fetchConfig();
+  }, []);
+
+  const isAdminWallet = connectedWallet?.address === config.ADMIN_WALLET;
 
   const showToast = (message, type = 'success') => setToastMessage({ message, type });
+
+  const sanitize = (text) => {
+    if (!text) return '';
+    // Simple regex to strip HTML tags for an extra layer of defense
+    return text.toString().replace(/<[^>]*>?/gm, '');
+  };
 
   const approveProject = async (id) => {
     const project = projects.find(p => p.id === id);
@@ -318,7 +340,7 @@ export default function App() {
   const userNotifications = useMemo(() => {
     if (!connectedWallet) return [];
     return projects.filter(p => 
-      p.walletAddress === connectedWallet.address && 
+      p.isOwner && 
       (p.approvalStatus === 'approved' || p.approvalStatus === 'declined') &&
       !dismissedBanners.has(p.id)
     );
@@ -332,51 +354,93 @@ export default function App() {
     });
   };
 
-  const fetchProjects = async () => {
+  const fetchProjects = useCallback(async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from('projects')
-      .select('*')
-      .order('created_at', { ascending: false });
-    if (error) {
-      console.error('Supabase fetch error:', error);
-      showToast('Failed to load projects', 'error');
-    } else {
-      const normalized = data.map(p => ({
-        id: p.id,
-        name: p.name,
-        shortDesc: p.short_desc,
-        fullDesc: p.full_desc,
-        category: p.category,
-        tags: p.tags || [],
-        website: p.website,
-        twitter: p.twitter,
-        discord: p.discord,
-        github: p.github,
-        logoColor: p.logo_color,
-        logoText: p.logo_text,
-        logoUrl: p.logo_url,
-        imageUrl: p.image_url,
-        status: p.status,
-        metricLabel: p.metric_label,
-        metricValue: p.metric_value,
-        walletAddress: p.wallet_address,
-        approvalStatus: p.approval_status,
-        lastUpdated: p.last_updated,
-      }));
-      setProjects(normalized);
-    }
-    setLoading(false);
-  };
+    try {
+      // Determine which columns to fetch based on admin status
+      const isAdmin = connectedWallet?.address === config.ADMIN_WALLET;
+      
+      // 1. Fetch public data (Conditionally include wallet_address ONLY for admin)
+      const columns = `
+        id, name, short_desc, full_desc, category, tags, 
+        website, twitter, discord, github, logo_color, 
+        logo_text, logo_url, image_url, status, 
+        metric_label, metric_value, last_updated, approval_status
+        ${isAdmin ? ', wallet_address' : ''}
+      `;
 
-  useEffect(() => { fetchProjects(); }, []);
+      const { data: publicData, error: publicError } = await supabase
+        .from('projects')
+        .select(columns)
+        .order('created_at', { ascending: false });
+      
+      if (publicError) {
+        console.error('Supabase fetch error:', publicError);
+        showToast('Failed to load projects', 'error');
+        return;
+      }
+
+      // 2. Fetch owned projects for the current user to set isOwner flag
+      let ownedIds = new Set();
+      if (connectedWallet) {
+        const { data: userData } = await supabase
+          .from('projects')
+          .select('id')
+          .eq('wallet_address', connectedWallet.address);
+        if (userData) {
+          ownedIds = new Set(userData.map(p => p.id));
+        }
+      }
+
+      const normalized = publicData.map(p => {
+        const isOwner = ownedIds.has(p.id);
+        return {
+          id: p.id,
+          name: p.name,
+          shortDesc: p.short_desc,
+          fullDesc: p.full_desc,
+          category: p.category,
+          tags: p.tags || [],
+          website: p.website,
+          twitter: p.twitter,
+          discord: p.discord,
+          github: p.github,
+          logoColor: p.logo_color,
+          logoText: p.logo_text,
+          logoUrl: p.logo_url,
+          imageUrl: p.image_url,
+          status: p.status,
+          metricLabel: p.metric_label,
+          metricValue: p.metric_value,
+          lastUpdated: p.last_updated ? new Date(p.last_updated).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '',
+          approvalStatus: p.approval_status,
+          // Privacy logic: 
+          // 1. If admin, use the fetched wallet_address
+          // 2. If owner, use their own connected address
+          // 3. Otherwise, hide it (undefined)
+          walletAddress: isAdmin ? p.wallet_address : (isOwner ? connectedWallet.address : undefined),
+          isOwner: isOwner
+        };
+      });
+      
+      setProjects(normalized);
+    } catch (err) {
+      console.error('Fetch error:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [connectedWallet, config.ADMIN_WALLET]);
+
+  useEffect(() => { 
+    fetchProjects(); 
+  }, [fetchProjects]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
     
     let baseProjects = projects;
     if (activeCategory === 'My Projects' && connectedWallet) {
-      baseProjects = projects.filter(p => p.walletAddress === connectedWallet.address);
+      baseProjects = projects.filter(p => p.isOwner);
     } else {
       baseProjects = projects.filter(p => p.approvalStatus === 'approved');
     }
@@ -424,10 +488,10 @@ export default function App() {
       logo_url: project.logoUrl,
       image_url: project.imageUrl,
       status: project.status,
-      metric_label: project.metricLabel,
-      metric_value: project.metricValue,
+      metric_label: sanitize(project.metricLabel),
+      metric_value: sanitize(project.metricValue),
       wallet_address: project.walletAddress,
-      approval_status: project.approvalStatus || 'pending',
+      approval_status: 'pending',
     });
     if (error) {
       console.error('Insert error:', error);
@@ -452,8 +516,8 @@ export default function App() {
       logo_url: updated.logoUrl,
       image_url: updated.imageUrl,
       status: updated.status,
-      metric_label: updated.metricLabel,
-      metric_value: updated.metricValue,
+      metric_label: sanitize(updated.metricLabel),
+      metric_value: sanitize(updated.metricValue),
       last_updated: new Date().toISOString(),
     }).eq('id', updated.id);
     if (error) {
@@ -605,14 +669,7 @@ export default function App() {
         )}
 
         {view === 'gpu-miner' && <GpuMiner />}
-
-        {view === 'validator' && (
-          <div style={{ maxWidth: 1200, margin: '80px auto', textAlign: 'center', padding: '40px 20px', animation: 'fadeIn 0.4s ease' }}>
-            <div style={{ width: 64, height: 64, borderRadius: 20, background: 'rgba(0,255,111,0.05)', border: '1px solid var(--accent-green-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', fontSize: 24 }}>⚡</div>
-            <h2 style={{ fontSize: 32, fontWeight: 800, marginBottom: 16, color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>Validator</h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: 16, maxWidth: 400, margin: '0 auto', lineHeight: 1.6 }}>This feature is currently under active development. Stay tuned for our upcoming release!</p>
-          </div>
-        )}
+        {view === 'validator' && <Validator />}
 
           {view === 'admin' && isAdminWallet && (
             <AdminPanel projects={projects} onApprove={approveProject} onDecline={declineProject} onHide={hideProject} />

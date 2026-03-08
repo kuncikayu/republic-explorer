@@ -60,7 +60,7 @@ export default function UpdateProject({ projects, onUpdate, connectedWallet, onC
   // Filter existing projects by wallet address
   const userProjects = useMemo(() => {
     if (!connectedWallet) return [];
-    return projects.filter(p => p.walletAddress === connectedWallet.address);
+    return projects.filter(p => p.isOwner);
   }, [projects, connectedWallet]);
 
   const filtered = useMemo(() =>

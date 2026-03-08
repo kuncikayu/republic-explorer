@@ -17,15 +17,15 @@ export default function Nav({ view, setView, connectedWallet, isAdminWallet, onC
   }, [dropdownRef]);
 
   const desktopNavItems = [
-    { id: 'explorer', label: 'Explorer' },
-    { id: 'gpu-miner', label: 'GPU Miner' },
-    { id: 'validator', label: 'Validator' },
+    { id: 'explorer', label: 'Explorers' },
+    { id: 'gpu-miner', label: 'GPU Miners' },
+    { id: 'validator', label: 'Validators' },
   ];
 
   const mobileNavItems = [
-    { id: 'explorer', label: 'Explorer' },
-    { id: 'gpu-miner', label: 'GPU Miner' },
-    { id: 'validator', label: 'Validator' },
+    { id: 'explorer', label: 'Explorers' },
+    { id: 'gpu-miner', label: 'GPU Miners' },
+    { id: 'validator', label: 'Validators' },
   ];
 
   if (connectedWallet) {
@@ -119,7 +119,7 @@ export default function Nav({ view, setView, connectedWallet, isAdminWallet, onC
                   gap: 4
                 }}>
                   <div style={{ padding: '8px 12px', fontSize: 11, color: 'var(--text-muted)', fontFamily: 'Martian Mono, monospace', wordBreak: 'break-all' }}>
-                    {connectedWallet.address}
+                    {formatAddress(connectedWallet.address)}
                   </div>
                   <div style={{ height: 1, background: 'var(--border)', margin: '4px 0' }} />
                   <button onClick={copyToClipboard} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'none', border: 'none', color: 'var(--text-secondary)', fontSize: 13, cursor: 'pointer', borderRadius: 6, textAlign: 'left', width: '100%' }} onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'var(--text-primary)'; }} onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = 'var(--text-secondary)'; }}>
