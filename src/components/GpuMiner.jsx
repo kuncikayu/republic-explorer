@@ -72,7 +72,7 @@ function StatCard({ icon: Icon, label, value, sub, color = 'var(--accent-green)'
         <div style={{ height: 26, width: '70%', background: 'rgba(255,255,255,0.06)', borderRadius: 6, animation: 'pulse 1.5s ease infinite' }} />
       ) : (
         <span style={{
-          fontSize: 20,
+          fontSize: 18,
           fontWeight: 800,
           fontFamily: 'Martian Mono, monospace',
           color,
@@ -125,7 +125,7 @@ function LeaderboardTab({ loading, data, error, onRetry }) {
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
         <div>
-          <h3 style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800, fontSize: 22, color: 'var(--text-primary)' }}>Leaderboard</h3>
+          <h3 style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800, fontSize: 20, color: 'var(--text-primary)' }}>Leaderboard</h3>
           <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>Top miners ranked by total jobs processed since genesis</p>
         </div>
       </div>
@@ -156,7 +156,7 @@ function LeaderboardTab({ loading, data, error, onRetry }) {
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                   >
                     <td style={{ padding: '14px 16px' }}>
-                      <span style={{ fontSize: 16, fontWeight: 800, color: RANK_COLORS[miner.rank] || 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>
+                      <span style={{ fontSize: 14, fontWeight: 800, color: RANK_COLORS[miner.rank] || 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>
                         {RANK_EMOJIS[miner.rank] || `#${miner.rank}`}
                       </span>
                     </td>
@@ -171,7 +171,7 @@ function LeaderboardTab({ loading, data, error, onRetry }) {
                       </span>
                     </td>
                     <td style={{ padding: '14px 16px', textAlign: 'right' }}>
-                      <span style={{ fontFamily: 'Martian Mono, monospace', fontSize: 13, color: 'var(--accent-green)', fontWeight: 600 }}>
+                      <span style={{ fontFamily: 'Martian Mono, monospace', fontSize: 12, color: 'var(--accent-green)', fontWeight: 600 }}>
                         {fmtNum(miner.totalJobs)}
                       </span>
                     </td>
@@ -214,7 +214,7 @@ function StatsTab({ loadingStats, loadingActivity, stats, activity, errorStats, 
     <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
 
       <div>
-        <h3 style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800, fontSize: 22, color: 'var(--text-primary)', marginBottom: 16 }}>Network Overview</h3>
+        <h3 style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800, fontSize: 20, color: 'var(--text-primary)', marginBottom: 16 }}>Network Overview</h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
           <StatCard loading={loadingStats} icon={Cpu} label="Total Jobs" value={fmtNum(stats?.totalJobs)} sub="All-time since genesis" />
           <StatCard loading={loadingStats} icon={CheckCircle2} label="Submit Jobs" value={fmtNum(stats?.totalSubmitJobs)} sub="Successful completions" color="#7cffb5" />
@@ -229,7 +229,7 @@ function StatsTab({ loadingStats, loadingActivity, stats, activity, errorStats, 
       <div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
           <div>
-            <h3 style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800, fontSize: 22, color: 'var(--text-primary)' }}>Recent Activity</h3>
+            <h3 style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800, fontSize: 20, color: 'var(--text-primary)' }}>Recent Activity</h3>
             <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>Latest job submissions across the network</p>
           </div>
         </div>
@@ -399,7 +399,7 @@ export default function GpuMiner() {
         </div>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
           <div>
-            <h1 style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800, fontSize: 30, letterSpacing: '-0.04em', background: 'linear-gradient(180deg, #FFFFFF 30%, #888888 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+            <h1 style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800, fontSize: 26, letterSpacing: '-0.04em', background: 'linear-gradient(180deg, #FFFFFF 30%, #888888 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
               Miner Dashboard
             </h1>
             <p style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 6 }}>

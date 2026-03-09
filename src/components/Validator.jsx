@@ -87,7 +87,7 @@ export default function Validator() {
           <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--accent-green)', boxShadow: '0 0 12px var(--accent-green)' }}></div>
           <span style={{ fontSize: 13, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--accent-green)', fontWeight: 800 }}>RepublicAI Mainnet</span>
         </div>
-        <h2 style={{ fontSize: 44, fontWeight: 900, color: 'var(--text-primary)', letterSpacing: '-0.04em', fontFamily: 'Inter, sans-serif' }}>
+        <h2 style={{ fontSize: 26, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.04em', background: 'linear-gradient(180deg, #FFFFFF 30%, #888888 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', fontFamily: 'Inter, sans-serif' }}>
           Network <span style={{ color: 'var(--accent-green)' }}>Governance</span>
         </h2>
       </div>
@@ -101,8 +101,8 @@ export default function Validator() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
             {stats.map((stat, i) => (
               <div key={i} className="glass-panel" style={{ padding: '20px', borderRadius: 16, background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)' }}>
-                <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 4 }}>{stat.label}</p>
-                <h3 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)' }}>{stat.value}</h3>
+                <p style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.10em', marginBottom: 8 }}>{stat.label}</p>
+                <h3 style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'Martian Mono, monospace', letterSpacing: '-0.02em' }}>{stat.value}</h3>
               </div>
             ))}
           </div>
@@ -133,12 +133,12 @@ export default function Validator() {
                       <td style={{ padding: '16px 32px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                           <img src={v.identity} alt="" style={{ width: 28, height: 28, borderRadius: 8 }} />
-                          <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>{v.moniker}</span>
+                          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{v.moniker}</span>
                         </div>
                       </td>
                       <td style={{ padding: '16px 32px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', fontFamily: 'Martian Mono' }}>{v.share}</span>
+                          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', fontFamily: 'Martian Mono, monospace' }}>{v.share}</span>
                           <div style={{ height: 3, width: 40, background: 'rgba(255,255,255,0.05)', borderRadius: 2 }}>
                             <div style={{ height: '100%', width: v.share, background: 'var(--accent-green)' }}></div>
                           </div>
@@ -168,7 +168,7 @@ export default function Validator() {
               <h3 style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-primary)' }}>Latest Blocks</h3>
               <div className="glass-panel" style={{ padding: '8px 16px', borderRadius: 12, border: '1px solid var(--accent-green-border)', display: 'flex', alignItems: 'center', gap: 8 }}>
                 <Activity size={14} style={{ color: 'var(--accent-green)' }} className="pulse" />
-                <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'Martian Mono' }}>H: {blocks[0]?.height || '—'}</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'Martian Mono, monospace' }}>H: {blocks[0]?.height || '—'}</span>
               </div>
             </div>
             
@@ -184,10 +184,10 @@ export default function Validator() {
               <tbody>
                 {blocks.map((block, i) => (
                   <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
-                    <td style={{ padding: '16px', color: 'var(--accent-green)', fontWeight: 700, fontFamily: 'Martian Mono' }}>{block.height}</td>
+                    <td style={{ padding: '16px', color: 'var(--accent-green)', fontWeight: 700, fontFamily: 'Martian Mono, monospace' }}>{block.height}</td>
                     <td style={{ padding: '16px', color: 'var(--text-primary)', fontWeight: 600 }}>{block.proposer}</td>
                     <td style={{ padding: '16px', color: 'var(--text-muted)', fontSize: 13 }}>{block.time}</td>
-                    <td style={{ padding: '16px', color: 'var(--text-muted)', fontSize: 11, fontFamily: 'Martian Mono' }}>{block.hash}</td>
+                    <td style={{ padding: '16px', color: 'var(--text-muted)', fontSize: 11, fontFamily: 'Martian Mono, monospace' }}>{block.hash}</td>
                   </tr>
                 ))}
               </tbody>
@@ -197,12 +197,12 @@ export default function Validator() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             <div className="glass-panel" style={{ padding: 24, borderRadius: 20, background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)' }}>
               <h4 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 12 }}>Consensus Health</h4>
-              <div style={{ fontSize: 32, fontWeight: 800, color: 'var(--accent-green)' }}>100%</div>
+              <div style={{ fontSize: 28, fontWeight: 800, color: 'var(--accent-green)' }}>100%</div>
               <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>All validators are signing</p>
             </div>
             <div className="glass-panel" style={{ padding: 24, borderRadius: 20, background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)' }}>
               <h4 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 12 }}>Avg Block Time</h4>
-              <div style={{ fontSize: 32, fontWeight: 800, color: 'var(--text-primary)' }}>5.32s</div>
+              <div style={{ fontSize: 28, fontWeight: 800, color: 'var(--text-primary)' }}>5.32s</div>
               <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>Last 1,000 blocks</p>
             </div>
           </div>
@@ -214,7 +214,7 @@ export default function Validator() {
         <div className="fade-in">
           <div style={{ background: 'var(--bg-card)', borderRadius: 24, border: '1px solid var(--border)', padding: '32px' }}>
             <div style={{ marginBottom: 24 }}>
-              <h3 style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-primary)' }}>Real-time Uptime Monitor</h3>
+              <h3 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)' }}>Real-time Uptime Monitor</h3>
               <p style={{ fontSize: 14, color: 'var(--text-muted)', marginTop: 4 }}>Visualizing validator performance across the last 100 blocks</p>
             </div>
 
@@ -226,7 +226,7 @@ export default function Validator() {
                 }}>
                   <div style={{ width: 180, display: 'flex', alignItems: 'center', gap: 10 }}>
                     <img src={v.identity} alt="" style={{ width: 24, height: 24, borderRadius: 6 }} />
-                    <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>{v.moniker}</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{v.moniker}</span>
                   </div>
                   <div style={{ flex: 1, display: 'flex', gap: 3 }}>
                     {Array.from({ length: 40 }).map((_, idx) => {
@@ -241,7 +241,7 @@ export default function Validator() {
                     })}
                   </div>
                   <div style={{ width: 80, textAlign: 'right' }}>
-                    <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--accent-green)' }}>{v.uptime}</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--accent-green)' }}>{v.uptime}</span>
                     <p style={{ fontSize: 10, color: 'var(--text-muted)' }}>Reliability</p>
                   </div>
                 </div>
