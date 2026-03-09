@@ -528,9 +528,26 @@ export default function App() {
     }
   };
 
+  const asciiContent = useMemo(() => {
+    const chars = '@R*=:. ';
+    let result = '';
+    for (let i = 0; i < 20; i++) {
+      for (let j = 0; j < 40; j++) {
+        result += chars[Math.floor(Math.random() * chars.length)];
+      }
+      result += '\n';
+    }
+    return result;
+  }, []);
+
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', position: 'relative', display: 'flex', flexDirection: 'column' }}>
-      <div className="page-bg" />
+      <div className="page-bg">
+
+        <div className="bg-ascii">{asciiContent}</div>
+        <div className="bg-noise" />
+        <div className="bg-glow-layers" />
+      </div>
 
       <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', flex: 1 }}>
         <Nav 

@@ -65,17 +65,64 @@ body {
   inset: 0;
   pointer-events: none;
   z-index: 0;
+  background: var(--bg-primary);
+  overflow: hidden;
+}
+
+.bg-ascii {
+  position: absolute;
+  inset: 0;
+  opacity: 0.02;
+  font-family: "Martian Mono", monospace;
+  font-size: 11px;
+  line-height: 1.2;
+  user-select: none;
+  pointer-events: none;
+  mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+  white-space: pre;
+  color: var(--accent-green);
+  animation: float-ascii 60s linear infinite;
+}
+
+.bg-noise {
+  position: absolute;
+  inset: 0;
+  opacity: 0.02;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.bg-glow-layers {
+  position: absolute;
+  inset: 0;
   background:
     radial-gradient(
-      ellipse 80% 40% at 50% -10%,
-      rgba(0, 255, 111, 0.05) 0%,
+      ellipse 80% 50% at 50% -10%,
+      rgba(0, 255, 111, 0.08) 0%,
       transparent 70%
     ),
     radial-gradient(
-      ellipse 50% 30% at 80% 80%,
-      rgba(0, 100, 50, 0.04) 0%,
+      ellipse 50% 50% at 80% 80%,
+      rgba(0, 100, 50, 0.05) 0%,
       transparent 60%
+    ),
+    radial-gradient(
+      circle at 20% 40%,
+      rgba(0, 255, 180, 0.03) 0%,
+      transparent 40%
     );
+}
+
+@keyframes float-ascii {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-30px) scale(1.05);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
 }
 
 @keyframes spin {
