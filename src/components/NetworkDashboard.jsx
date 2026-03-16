@@ -103,18 +103,29 @@ function CustomSelect({ options, value, onChange, padding = '8px 12px', fontSize
 
 const avatarCache = {};
 
-export function ValidatorLogo({ identity, moniker, fallbackSeed }) {
-  const isUrl = identity && identity.startsWith('http');
-  const fallback = `https://api.dicebear.com/7.x/identicon/svg?seed=${fallbackSeed}`;
-  const [imgUrl, setImgUrl] = useState(isUrl ? identity : '');
+export function ValidatorLogo({ identity, moniker, fallbackSeed, size = 24 }) {
+  const fallback = `https://api.dicebear.com/7.x/identicon/svg?seed=${fallbackSeed || moniker}`;
+  const [imgUrl, setImgUrl] = useState('');
+  const [errorToken, setErrorToken] = useState(0);
 
   useEffect(() => {
     let unmounted = false;
     
-    if (isUrl) return;
+    // Priority 1: Keybase Identity (Hex suffix)
+    const isKeybaseId = identity && /^[0-9A-F]{16}$/i.test(identity);
+    // Priority 2: Direct URL
+    const isUrl = identity && (identity.startsWith('http') || identity.includes('.'));
+
+    if (isUrl && !isKeybaseId) {
+      setImgUrl(identity);
+      return;
+    }
 
     const cacheKey = identity || moniker;
-    if (!cacheKey) return;
+    if (!cacheKey) {
+      setImgUrl(fallback);
+      return;
+    }
 
     if (avatarCache[cacheKey]) {
       setImgUrl(avatarCache[cacheKey]);
@@ -123,26 +134,48 @@ export function ValidatorLogo({ identity, moniker, fallbackSeed }) {
 
     const fetchKeybase = async () => {
       try {
-        let query = identity ? `key_suffix=${identity}` : `usernames=${moniker}`;
+        let query = isKeybaseId ? `key_suffix=${identity}` : `usernames=${moniker}`;
         const res = await fetch(`https://keybase.io/_/api/1.0/user/lookup.json?${query}&fields=pictures`);
         if (!res.ok) throw new Error();
         const data = await res.json();
         const url = data?.them?.[0]?.pictures?.primary?.url;
         
-        const finalUrl = url || fallback;
-        avatarCache[cacheKey] = finalUrl;
-        if (!unmounted) setImgUrl(finalUrl);
+        if (url) {
+          avatarCache[cacheKey] = url;
+          if (!unmounted) setImgUrl(url);
+        } else {
+          if (!unmounted) setImgUrl(fallback);
+        }
       } catch (err) {
-        avatarCache[cacheKey] = fallback;
         if (!unmounted) setImgUrl(fallback);
       }
     };
 
     fetchKeybase();
     return () => { unmounted = true; };
-  }, [identity, moniker, fallbackSeed, isUrl, fallback]);
+  }, [identity, moniker, fallbackSeed, fallback]);
 
-  return <img src={imgUrl || fallback} alt="" style={{ width: 24, height: 24, borderRadius: 6, background: 'var(--s3)', objectFit: 'cover' }} />;
+  return (
+    <img 
+      key={`${imgUrl}-${errorToken}`}
+      src={imgUrl || fallback} 
+      onError={() => {
+        if (imgUrl && imgUrl !== fallback) {
+          setImgUrl(fallback);
+          setErrorToken(prev => prev + 1);
+        }
+      }}
+      alt="" 
+      style={{ 
+        width: size, 
+        height: size, 
+        borderRadius: size / 4, 
+        background: 'var(--s1)', 
+        border: '1px solid var(--border)',
+        objectFit: 'cover' 
+      }} 
+    />
+  );
 }
 
 function TransactionChart({ blockMetas }) {
