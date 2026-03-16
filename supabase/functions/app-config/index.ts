@@ -11,6 +11,12 @@ serve(async (req) => {
   }
 
   try {
+    const authHeader = req.headers.get('Authorization')
+    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+
+    // Optional: Restricted config access could also check a specific token or key
+    // For now, we'll keep it open but suggest signature verification in the future.
+
     const { wallet } = await req.json().catch(() => ({}));
     const adminWallet = Deno.env.get('ADMIN_WALLET');
     const isAdmin = wallet && adminWallet && wallet.toLowerCase() === adminWallet.toLowerCase();

@@ -33,14 +33,30 @@
     "apis": {
         "rpc": [
             {
+                "address": "https://republic-testnet-rpc.keywood.site",
+                "provider": "Keywood"
+            },
+            {
                 "address": "https://rpc.republicai.io",
                 "provider": "Republic AI"
+            },
+            {
+                "address": "https://republic-testnet-rpc.linknode.org",
+                "provider": "AstroStake"
             }
         ],
         "rest": [
             {
+                "address": "https://republic-testnet-api.keywood.site",
+                "provider": "Keywood"
+            },
+            {
                 "address": "https://rest.republicai.io",
                 "provider": "Republic AI"
+            },
+            {
+                "address": "https://republic-testnet-api.linknode.org",
+                "provider": "AstroStake"
             }
         ]
     },

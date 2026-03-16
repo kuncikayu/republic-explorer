@@ -1,18 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { UploadCloud } from 'lucide-react';
-
-export const SUPABASE_URL      = import.meta.env.VITE_SUPABASE_URL;
-export const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-export const getSupabase = () => {
-  if (window.supabase) {
-    return window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  }
-  return null;
-}
+import { supabase } from '../supabase.js';
 
 export async function uploadLogo(file, projectName, walletAddress) {
-  const supabase = getSupabase();
   if (!supabase) throw new Error("Supabase client not initialized.");
 
   const ext = file.name.split('.').pop()

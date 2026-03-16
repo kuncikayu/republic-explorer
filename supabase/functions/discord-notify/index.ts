@@ -11,6 +11,17 @@ serve(async (req) => {
   }
 
   try {
+    const authHeader = req.headers.get('Authorization')
+    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+
+    // Basic check: Allow if Authorization header matches service role key
+    if (!authHeader || (serviceKey && !authHeader.includes(serviceKey))) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 401,
+      })
+    }
+
     const { project, type } = await req.json()
     const webhookUrl = Deno.env.get('DISCORD_WEBHOOK_URL')
 

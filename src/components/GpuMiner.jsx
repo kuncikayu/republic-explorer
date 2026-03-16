@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { fetchLeaderboard, fetchNetworkStats, fetchRecentActivity } from '../utils/rpc.js';
-import { Activity, Trophy, BarChart2, Users, Cpu, CheckCircle2, XCircle, RefreshCw, Loader2, Hash } from 'lucide-react';
+import { fetchTransactionsFromDb } from '../utils/networkApi.js';
+import { Activity, Trophy, BarChart2, Users, Cpu, CheckCircle2, XCircle, RefreshCw, Loader2, Hash, Database } from 'lucide-react';
 
 
 function truncAddr(addr) {
@@ -316,9 +317,110 @@ function ErrorState({ message, onRetry }) {
 }
 
 
+function TransactionsTab({ loading, submissions, results }) {
+  const thStyle = {
+    padding: '12px 16px',
+    fontSize: 11,
+    fontWeight: 700,
+    color: 'var(--text-muted)',
+    textTransform: 'uppercase',
+    letterSpacing: '0.08em',
+    textAlign: 'left',
+    borderBottom: '1px solid var(--border)',
+    background: 'rgba(255,255,255,0.02)',
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+      <div>
+        <h3 style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800, fontSize: 20, color: 'var(--text-primary)', marginBottom: 16 }}>📬 Job Submissions</h3>
+        <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr>
+                <th style={thStyle}>Job ID</th>
+                <th style={thStyle}>TX Hash</th>
+                <th style={thStyle}>Sender</th>
+                <th style={{ ...thStyle, textAlign: 'right' }}>Block</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} cols={4} />)
+              ) : (
+                submissions.map((tx, i) => (
+                  <tr key={i} style={{ borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }}>
+                    <td style={{ padding: '12px 16px' }}>
+                      <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--accent-green)' }}>#{tx.job_id}</span>
+                    </td>
+                    <td style={{ padding: '12px 16px' }}>
+                      <a href={`https://stake.astrostake.xyz/republic-testnet/tx/${tx.tx_hash}`} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-green)', fontSize: 11, fontFamily: 'Martian Mono, monospace', textDecoration: 'none' }}>
+                        {tx.tx_hash.slice(0, 8)}...{tx.tx_hash.slice(-8)}
+                      </a>
+                    </td>
+                    <td style={{ padding: '12px 16px' }}>
+                      <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{truncAddr(tx.sender)}</span>
+                    </td>
+                    <td style={{ padding: '12px 16px', textAlign: 'right' }}>
+                      <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{tx.block_height}</span>
+                    </td>
+                  </tr>
+                ))
+              )}
+              {!loading && submissions.length === 0 && <tr><td colSpan="4" style={{ textAlign: 'center', padding: 40, color: 'var(--text-muted)' }}>No submission data found. Indexer might be running.</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div>
+        <h3 style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800, fontSize: 20, color: 'var(--text-primary)', marginBottom: 16 }}>✅ Job Results</h3>
+        <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr>
+                <th style={thStyle}>Job ID</th>
+                <th style={thStyle}>TX Hash</th>
+                <th style={thStyle}>Sender</th>
+                <th style={{ ...thStyle, textAlign: 'right' }}>Block</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} cols={4} />)
+              ) : (
+                results.map((tx, i) => (
+                  <tr key={i} style={{ borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }}>
+                    <td style={{ padding: '12px 16px' }}>
+                      <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--accent-green)' }}>#{tx.job_id}</span>
+                    </td>
+                    <td style={{ padding: '12px 16px' }}>
+                      <a href={`https://stake.astrostake.xyz/republic-testnet/tx/${tx.tx_hash}`} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-green)', fontSize: 11, fontFamily: 'Martian Mono, monospace', textDecoration: 'none' }}>
+                        {tx.tx_hash.slice(0, 8)}...{tx.tx_hash.slice(-8)}
+                      </a>
+                    </td>
+                    <td style={{ padding: '12px 16px' }}>
+                      <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{truncAddr(tx.sender)}</span>
+                    </td>
+                    <td style={{ padding: '12px 16px', textAlign: 'right' }}>
+                      <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{tx.block_height}</span>
+                    </td>
+                  </tr>
+                ))
+              )}
+              {!loading && results.length === 0 && <tr><td colSpan="4" style={{ textAlign: 'center', padding: 40, color: 'var(--text-muted)' }}>No result data found. Indexer might be running.</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const TABS = [
   { id: 'stats', label: 'Stats & Activity', icon: Activity },
   { id: 'leaderboard', label: 'Leaderboard', icon: Trophy },
+  { id: 'transactions', label: 'Transactions', icon: Database },
 ];
 
 export default function GpuMiner() {
@@ -335,6 +437,10 @@ export default function GpuMiner() {
   const [activity, setActivity] = useState([]);
   const [loadingActivity, setLoadingActivity] = useState(true);
   const [errorActivity, setErrorActivity] = useState(null);
+
+  const [txSubmissions, setTxSubmissions] = useState([]);
+  const [txResults, setTxResults] = useState([]);
+  const [loadingTx, setLoadingTx] = useState(true);
 
   const [lastUpdated, setLastUpdated] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -367,8 +473,6 @@ export default function GpuMiner() {
     }
 
 
-    setLoadingActivity(true);
-    setErrorActivity(null);
     try {
       const data = await fetchRecentActivity();
       setActivity(data);
@@ -376,6 +480,20 @@ export default function GpuMiner() {
       setErrorActivity(e.message || 'Failed to load activity');
     } finally {
       setLoadingActivity(false);
+    }
+
+    setLoadingTx(true);
+    try {
+      const [submissions, results] = await Promise.all([
+        fetchTransactionsFromDb({ type: 'SubmitJob', limit: 50 }),
+        fetchTransactionsFromDb({ type: 'SubmitJobResult', limit: 50 })
+      ]);
+      setTxSubmissions(submissions);
+      setTxResults(results);
+    } catch (e) {
+      console.error('Failed to load transactions:', e);
+    } finally {
+      setLoadingTx(false);
       setIsRefreshing(false);
     }
 
@@ -459,6 +577,14 @@ export default function GpuMiner() {
           activity={activity}
           errorStats={errorStats}
           errorActivity={errorActivity}
+          onRetry={loadAll}
+        />
+      )}
+      {activeTab === 'transactions' && (
+        <TransactionsTab
+          loading={loadingTx}
+          submissions={txSubmissions}
+          results={txResults}
           onRetry={loadAll}
         />
       )}

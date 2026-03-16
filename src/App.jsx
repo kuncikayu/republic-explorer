@@ -13,7 +13,7 @@ import { useChain } from '@interchain-kit/react'
 import { useTheme } from '@interchain-ui/react';
 import { sendAdminApproveNotification, sendAdminDeclineNotification } from './utils/discord.js';
 import GpuMiner from './components/GpuMiner.jsx';
-import Validator from './components/Validator.jsx';
+import NetworkDashboard from './components/NetworkDashboard.jsx';
 
 function SkeletonCard() {
   return (
@@ -273,19 +273,30 @@ export default function App() {
   const [config, setConfig] = useState({ isAdmin: false, REPUBLIC_RPC_URL: '' });
 
   useEffect(() => {
+    // Check localStorage first
+    const cachedAdmin = localStorage.getItem('isAdmin') === 'true';
+    if (cachedAdmin && !config.isAdmin) {
+      setConfig(prev => ({ ...prev, isAdmin: true }));
+    }
+
     const fetchConfig = async () => {
+      if (status === 'Connecting') return;
+
       try {
         const { data, error } = await supabase.functions.invoke('app-config', {
           body: { wallet: connectedWallet?.address }
         });
         if (error) throw error;
-        if (data) setConfig(data);
+        if (data) {
+          setConfig(data);
+          localStorage.setItem('isAdmin', data.isAdmin);
+        }
       } catch (err) {
         console.warn('Failed to fetch app config:', err.message);
       }
     };
     fetchConfig();
-  }, [connectedWallet?.address]);
+  }, [connectedWallet?.address, status]);
 
   const isAdminWallet = config.isAdmin;
 
@@ -313,16 +324,26 @@ export default function App() {
   };
 
   const declineProject = async (id) => {
+    if (!isAdminWallet) {
+      showToast('Admin access required', 'error');
+      return;
+    }
+    
     const project = projects.find(p => p.id === id);
-    const { error } = await supabase
-      .from('projects')
-      .delete()
-      .eq('id', id);
+    
+    // Instead of a direct DELETE (subject to RLS), use the RPC we just created
+    // This function has SECURITY DEFINER and bypasses RLS for authorized admin wallet.
+    const { error } = await supabase.rpc('admin_delete_project', {
+      project_id: id,
+      requester_wallet: connectedWallet?.address
+    });
+    
     if (error) {
-      showToast('Failed to delete project', 'error');
+      console.error('Delete error:', error);
+      showToast('Action failed: ' + error.message, 'error');
     } else {
       await fetchProjects();
-      showToast('Project deleted from database', 'success');
+      showToast('Project declined and removed', 'success');
       if (project) sendAdminDeclineNotification(project).catch(err => console.error(err));
     }
   };
@@ -474,17 +495,17 @@ export default function App() {
 
     const { error } = await supabase.from('projects').insert({
       id: project.id,
-      name: project.name,
-      short_desc: project.shortDesc,
-      full_desc: project.fullDesc,
-      category: project.category,
+      name: sanitize(project.name),
+      short_desc: sanitize(project.shortDesc),
+      full_desc: sanitize(project.fullDesc),
+      category: sanitize(project.category),
       tags: project.tags,
-      website: project.website,
-      twitter: project.twitter,
-      discord: project.discord,
-      github: project.github,
+      website: sanitize(project.website),
+      twitter: sanitize(project.twitter),
+      discord: sanitize(project.discord),
+      github: sanitize(project.github),
       logo_color: project.logoColor,
-      logo_text: project.logoText,
+      logo_text: sanitize(project.logoText),
       logo_url: project.logoUrl,
       image_url: project.imageUrl,
       status: project.status,
@@ -502,17 +523,17 @@ export default function App() {
 
   const handleUpdate = async (updated) => {
     const { error } = await supabase.from('projects').update({
-      name: updated.name,
-      short_desc: updated.shortDesc,
-      full_desc: updated.fullDesc,
-      category: updated.category,
+      name: sanitize(updated.name),
+      short_desc: sanitize(updated.shortDesc),
+      full_desc: sanitize(updated.fullDesc),
+      category: sanitize(updated.category),
       tags: updated.tags,
-      website: updated.website,
-      twitter: updated.twitter,
-      discord: updated.discord,
-      github: updated.github,
+      website: sanitize(updated.website),
+      twitter: sanitize(updated.twitter),
+      discord: sanitize(updated.discord),
+      github: sanitize(updated.github),
       logo_color: updated.logoColor,
-      logo_text: updated.logoText,
+      logo_text: sanitize(updated.logoText),
       logo_url: updated.logoUrl,
       image_url: updated.imageUrl,
       status: updated.status,
@@ -686,7 +707,7 @@ export default function App() {
         )}
 
         {view === 'gpu-miner' && <GpuMiner />}
-        {view === 'validator' && <Validator />}
+        {view === 'dashboard' && <NetworkDashboard />}
 
           {view === 'admin' && isAdminWallet && (
             <AdminPanel projects={projects} onApprove={approveProject} onDecline={declineProject} onHide={hideProject} />
