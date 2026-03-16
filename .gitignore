@@ -57,7 +57,5 @@ debug_*.js
 rest_vals.json
 r.consensus_pubkey
 v.status
-j.status))]
-"{"
 *.txt
 *.log

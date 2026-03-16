@@ -103,7 +103,7 @@ function CustomSelect({ options, value, onChange, padding = '8px 12px', fontSize
 
 const avatarCache = {};
 
-function ValidatorLogo({ identity, moniker, fallbackSeed }) {
+export function ValidatorLogo({ identity, moniker, fallbackSeed }) {
   const isUrl = identity && identity.startsWith('http');
   const fallback = `https://api.dicebear.com/7.x/identicon/svg?seed=${fallbackSeed}`;
   const [imgUrl, setImgUrl] = useState(isUrl ? identity : '');
@@ -287,7 +287,7 @@ export default function NetworkDashboard() {
             const newState = { ...prev };
             data.validators.forEach(v => {
                 if (!v.hexAddress) return;
-                const signed = data.latestSignatures.includes(v.hexAddress);
+                const signed = data.latestSignatures.includes(v.hexAddress.toUpperCase());
                 const currentHistory = newState[v.operator_address] || [];
                 const blockEntry = { signed, height: data.latestBlockParsed.height };
                 const newHistory = [blockEntry, ...currentHistory];
@@ -397,10 +397,6 @@ export default function NetworkDashboard() {
                   ['Chain ID', s?.node_info?.network || '–'],
                   ['Latest Block', `#${s?.sync_info?.latest_block_height || '–'}`],
                   ['Block Time', s?.sync_info?.latest_block_time ? new Date(s.sync_info.latest_block_time).toUTCString() : '–'],
-                  ['Catching Up', s?.sync_info?.catching_up ? '⚠ Yes' : '✓ No'],
-                  ['Node Moniker', s?.node_info?.moniker || '–'],
-                  ['Node Version', s?.node_info?.version || '–'],
-                  ['Peers', data.netInfo?.n_peers || '–'],
                 ].map(([k, v], i) => (
                   <div key={i} className="info-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 20px', borderBottom: '1px solid var(--border)', fontSize: 12 }}>
                     <span style={{ color: 'var(--text-muted)' }}>{k}</span>
@@ -447,7 +443,7 @@ export default function NetworkDashboard() {
         <Panel title="📋 Recent Jobs" subtitle="Latest compute job submissions" pill={`${totalJobs.toLocaleString()} jobs`}>
           <div style={{ overflowX: 'auto' }}>
             <table className="rep-table">
-              <thead><tr><th>Job ID</th><th>Transactions</th><th>Target Validator</th><th>Image</th><th>Status</th><th>Fee</th></tr></thead>
+              <thead><tr><th>Job ID</th><th>Result Hash</th><th>Target Validator</th><th>Image</th><th>Status</th><th>Fee</th></tr></thead>
               <tbody>
                 {loading && data.jobs.length === 0 ? <tr><td colSpan="5"><SkeletonTable /></td></tr> : null}
                 {data.jobs.slice(0, 10).map((j, i) => (
@@ -455,19 +451,27 @@ export default function NetworkDashboard() {
                     <td style={{ padding: '12px 20px', fontFamily: 'Martian Mono, monospace', color: 'var(--accent-green)' }}>#{j.id}</td>
                     <td style={{ padding: '12px 20px' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                        {(j.job_transactions || []).map(tx => (
-                          <a 
-                            key={tx.tx_hash}
-                            href={`https://stake.astrostake.xyz/republic-testnet/tx/${tx.tx_hash}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="tx-link"
-                            style={{ fontSize: 10, color: 'var(--accent-green)', opacity: 0.8, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}
-                          >
-                            <Box size={10} /> {tx.type === 'SubmitJob' ? 'Create' : 'Result'}
-                          </a>
-                        ))}
-                        {(!j.job_transactions || j.job_transactions.length === 0) && <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>No TX data</span>}
+                        {j.result_hash ? (
+                          <div style={{ fontSize: 10, fontFamily: 'Martian Mono, monospace', color: 'var(--accent-green)', opacity: 0.9 }}>
+                            {j.result_hash.substring(0, 8)}...{j.result_hash.substring(j.result_hash.length - 8)}
+                          </div>
+                        ) : (
+                          <div style={{ display: 'flex', gap: 4 }}>
+                            {(j.job_transactions || []).map(tx => (
+                              <a 
+                                key={tx.tx_hash}
+                                href={`https://stake.astrostake.xyz/republic-testnet/tx/${tx.tx_hash}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="tx-link"
+                                style={{ color: 'var(--accent-green)', opacity: 0.7 }}
+                              >
+                                <Box size={10} />
+                              </a>
+                            ))}
+                            {(!j.job_transactions || j.job_transactions.length === 0) && <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>No Hash</span>}
+                          </div>
+                        )}
                       </div>
                     </td>
                     <td style={{ padding: '12px 20px', fontFamily: 'Martian Mono, monospace', fontSize: 12, color: 'var(--text-secondary)' }}>{formatAddress(j.target_validator)}</td>
@@ -530,16 +534,14 @@ export default function NetworkDashboard() {
               options={[
                 { value: "", label: "All Status" },
                 { value: "PendingExecution", label: "Pending" },
-                { value: "PendingValidation", label: "Validating" },
-                { value: "Completed", label: "Completed" },
-                { value: "Failed", label: "Failed" }
+                { value: "PendingValidation", label: "Validating" }
               ]}
             />
           </div>
           <div style={{ overflowX: 'auto', maxHeight: '600px' }}>
             <table className="rep-table" style={{ width: '100%' }}>
               <thead>
-                <tr><th>ID</th><th>Transactions</th><th>Creator</th><th>Target Validator</th><th>Execution Image</th><th>Status</th><th>Fee</th></tr>
+                <tr><th>ID</th><th>Result Hash</th><th>Creator</th><th>Target Validator</th><th>Execution Image</th><th>Status</th><th>Fee</th></tr>
               </thead>
               <tbody>
                 {filteredJobs.length === 0 ? <tr><td colSpan="6" style={{ textAlign: 'center', padding: 40, color: 'var(--text-muted)' }}>No jobs found</td></tr> : null}
@@ -547,19 +549,28 @@ export default function NetworkDashboard() {
                   <tr key={i} className="hover:bg-[rgba(255,255,255,0.02)] transition-colors">
                     <td style={{ padding: '10px 20px', color: 'var(--accent-green)', fontFamily: 'Martian Mono, monospace' }}>#{j.id}</td>
                     <td style={{ padding: '10px 20px' }}>
-                      <div style={{ display: 'flex', gap: 8 }}>
-                        {(j.job_transactions || []).map(tx => (
-                          <a 
-                            key={tx.tx_hash}
-                            href={`https://stake.astrostake.xyz/republic-testnet/tx/${tx.tx_hash}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            title={`${tx.type}: ${tx.tx_hash}`}
-                            style={{ color: 'var(--accent-green)', display: 'flex', alignItems: 'center' }}
-                          >
-                            <Box size={14} />
-                          </a>
-                        ))}
+                      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                        {j.result_hash ? (
+                          <span style={{ fontSize: 11, fontFamily: 'Martian Mono, monospace', color: 'var(--accent-green)' }}>
+                            {j.result_hash.substring(0, 10)}...{j.result_hash.substring(j.result_hash.length - 10)}
+                          </span>
+                        ) : (
+                          <>
+                            {(j.job_transactions || []).map(tx => (
+                              <a 
+                                key={tx.tx_hash}
+                                href={`https://stake.astrostake.xyz/republic-testnet/tx/${tx.tx_hash}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title={`${tx.type}: ${tx.tx_hash}`}
+                                style={{ color: 'var(--accent-green)', display: 'flex', alignItems: 'center', opacity: 0.7 }}
+                              >
+                                <Box size={14} />
+                              </a>
+                            ))}
+                            {(!j.job_transactions || j.job_transactions.length === 0) && <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>No Hash</span>}
+                          </>
+                        )}
                       </div>
                     </td>
                     <td style={{ padding: '10px 20px', fontSize: 11, color: 'var(--text-secondary)', fontFamily: 'Martian Mono, monospace' }}>{formatAddress(j.creator)}</td>

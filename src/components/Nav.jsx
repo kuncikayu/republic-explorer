@@ -18,13 +18,11 @@ export default function Nav({ view, setView, connectedWallet, isAdminWallet, onC
 
   const desktopNavItems = [
     { id: 'explorer', label: 'Explorers' },
-    { id: 'gpu-miner', label: 'GPU Miners' },
     { id: 'dashboard', label: 'Dashboard' },
   ];
 
   const mobileNavItems = [
     { id: 'explorer', label: 'Explorers' },
-    { id: 'gpu-miner', label: 'GPU Miners' },
     { id: 'dashboard', label: 'Dashboard' },
   ];
 

@@ -209,6 +209,29 @@ export async function fetchAllNetworkData(lightweight = false, existingData = nu
     const executionCount = dbJobStats?.execution || jobs.filter(j => j.status === 'PendingExecution').length;
     const validationCount = dbJobStats?.validation || jobs.filter(j => j.status === 'PendingValidation').length;
 
+    // Enrichment: Fill transaction hashes from Database if available
+    try {
+        if (jobs.length > 0) {
+            const jobIds = jobs.map(j => parseInt(j.id, 10)).filter(id => !isNaN(id));
+            const { data: txData } = await supabase
+                .from('job_transactions')
+                .select('job_id, tx_hash, type')
+                .in('job_id', jobIds);
+            
+            if (txData && txData.length > 0) {
+                jobs.forEach(j => {
+                    const id = parseInt(j.id, 10);
+                    const associatedTxs = txData.filter(t => t.job_id === id);
+                    if (associatedTxs.length > 0) {
+                        j.job_transactions = associatedTxs;
+                    }
+                });
+            }
+        }
+    } catch (e) {
+        console.error("Enrichment error:", e);
+    }
+
     // 2. Status & Halt Check
     const status = statusRes?.result || null;
     const isHalted = (() => {
@@ -260,7 +283,24 @@ export async function fetchAllNetworkData(lightweight = false, existingData = nu
             };
         }));
 
-        validators.sort((a, b) => parseFloat(b.vpShare) - parseFloat(a.vpShare));
+        validators.sort((a, b) => {
+            const ta = BigInt(a.tokens || '0');
+            const tb = BigInt(b.tokens || '0');
+            if (tb > ta) return 1;
+            if (ta > tb) return -1;
+            return 0;
+        });
+        validators.forEach((v, i) => v.rank = i + 1);
+    } else if (existingData) {
+        validators = [...existingData.validators];
+        validators.sort((a, b) => {
+            const ta = BigInt(a.tokens || '0');
+            const tb = BigInt(b.tokens || '0');
+            if (tb > ta) return 1;
+            if (ta > tb) return -1;
+            return 0;
+        });
+        validators.forEach((v, i) => v.rank = i + 1);
     }
 
     // 4. Blocks
@@ -270,8 +310,8 @@ export async function fetchAllNetworkData(lightweight = false, existingData = nu
         time: b.header?.time,
         timeAgoStr: timeAgo(b.header?.time),
         txs: b.num_txs,
-        proposerHex: b.header?.proposer_address,
-        proposer: validators.find(v => v.hexAddress === b.header?.proposer_address)?.moniker || formatAddress(b.header?.proposer_address),
+        proposerHex: (b.header?.proposer_address || '').toUpperCase(),
+        proposer: validators.find(v => (v.hexAddress || '').toUpperCase() === (b.header?.proposer_address || '').toUpperCase())?.moniker || formatAddress(b.header?.proposer_address),
         size: b.block_id?.part_set_header?.total || 0
     }));
 
@@ -286,11 +326,23 @@ export async function fetchAllNetworkData(lightweight = false, existingData = nu
         validators,
         blockMetas,
         mempoolTxs,
-        pool: poolRes?.pool,
-        supply: supplyRes?.supply,
+        pool: lightweight && existingData ? existingData.pool : poolRes?.pool,
+        supply: lightweight && existingData ? existingData.supply : supplyRes?.supply,
         chainConfig,
         latestBlockParsed: blockMetas[0],
-        latestSignatures: latestBlockRes?.block?.last_commit?.signatures?.map(s => s.validator_address) || [],
+        latestSignatures: (latestBlockRes?.block?.last_commit?.signatures || [])
+            .map(s => {
+                const addr = s.validator_address;
+                if (!addr) return null;
+                // Heuristic: Hex addresses are 40 chars. Base64 for 20 bytes is ~28 chars.
+                // If it's not 40 chars, try decoding it as Base64.
+                if (addr.length !== 40 && (addr.length === 28 || addr.includes('/') || addr.includes('+') || addr.endsWith('='))) {
+                    const decoded = b64ToHex(addr);
+                    return decoded ? decoded.toUpperCase() : null;
+                }
+                return addr.toUpperCase();
+            })
+            .filter(Boolean),
         executionCount,
         validationCount
     };

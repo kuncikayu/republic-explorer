@@ -1,35 +1,65 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Shield, Activity, Users, Zap, Search, ExternalLink, BarChart3, Clock, Loader2 } from 'lucide-react';
-import { fetchValidators, fetchValidatorStats, fetchRecentBlocks } from '../utils/rpc.js';
+import { fetchAllNetworkData } from '../utils/networkApi.js';
+import { ValidatorLogo } from './NetworkDashboard.jsx';
 
 export default function Validator() {
   const [activeTab, setActiveTab] = useState('validators'); 
   const [search, setSearch] = useState('');
-  const [validators, setValidators] = useState([]);
-  const [stats, setStats] = useState([]);
-  const [blocks, setBlocks] = useState([]);
+
+  const [data, setData] = useState({ validators: [], blockMetas: [], status: null, jobsTotal: 0 });
   const [loading, setLoading] = useState(true);
+  const [liveUptimeHistory, setLiveUptimeHistory] = useState({});
+  const lastProcessedHeight = useRef(null);
+
+  const stats = useMemo(() => [
+    { label: 'Total Jobs', value: (data.jobsTotal || 0).toLocaleString() },
+    { label: 'Active Validators', value: `${data.validators.filter(v => v.isActiveSet).length} / 100` },
+    { label: 'Latest Block', value: `#${data.status?.sync_info?.latest_block_height || '—'}` },
+    { label: 'Peers', value: data.netInfo?.n_peers || '—' },
+  ], [data]);
+
+  const loadData = useCallback(async (isBackground = false) => {
+    if (!isBackground) setLoading(true);
+    try {
+      const res = await fetchAllNetworkData(isBackground, isBackground ? data : null);
+      setData(res);
+      setLoading(false);
+    } catch (err) {
+      console.error('Failed to load validator data:', err);
+      setLoading(false);
+    }
+  }, [data]);
 
   useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      try {
-        const [vData, sData, bData] = await Promise.all([
-          fetchValidators(),
-          fetchValidatorStats(),
-          fetchRecentBlocks()
-        ]);
-        setValidators(vData);
-        setStats(sData);
-        setBlocks(bData);
-      } catch (err) {
-        console.error('Failed to load validator data:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
     loadData();
-  }, []);
+    const timer = setInterval(() => loadData(true), 3000);
+    return () => clearInterval(timer);
+  }, [loadData]);
+
+  // Sync Live Blocks into Uptime UI (Same as Dashboard)
+  useEffect(() => {
+    if (data.latestBlockParsed && data.latestSignatures && data.latestBlockParsed.height !== lastProcessedHeight.current) {
+        lastProcessedHeight.current = data.latestBlockParsed.height;
+        
+        setLiveUptimeHistory(prev => {
+            const newState = { ...prev };
+            data.validators.forEach(v => {
+                if (!v.hexAddress) return;
+                const signed = data.latestSignatures.includes(v.hexAddress.toUpperCase());
+                const currentHistory = newState[v.operator_address] || [];
+                const blockEntry = { signed, height: data.latestBlockParsed.height };
+                const newHistory = [blockEntry, ...currentHistory];
+                if (newHistory.length > 100) newHistory.pop();
+                newState[v.operator_address] = newHistory;
+            });
+            return newState;
+        });
+    }
+  }, [data.latestBlockParsed, data.latestSignatures, data.validators]);
+
+  const validators = data.validators;
+  const blocks = data.blockMetas;
 
   const filteredValidators = validators.filter(v => 
     v.moniker.toLowerCase().includes(search.toLowerCase())
@@ -219,33 +249,44 @@ export default function Validator() {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {filteredValidators.map(v => (
-                <div key={v.moniker} style={{ 
-                  display: 'flex', alignItems: 'center', gap: 24, padding: '16px', 
-                  borderRadius: 16, background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)' 
-                }}>
-                  <div style={{ width: 180, display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <img src={v.identity} alt="" style={{ width: 24, height: 24, borderRadius: 6 }} />
-                    <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{v.moniker}</span>
+              {filteredValidators.map(v => {
+                const history = liveUptimeHistory[v.operator_address] || [];
+                const displayHistory = [...history];
+                while(displayHistory.length < 100) displayHistory.push(null);
+
+                return (
+                  <div key={v.operator_address} style={{ 
+                    display: 'flex', alignItems: 'center', gap: 24, padding: '16px', 
+                    borderRadius: 16, background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)' 
+                  }}>
+                    <div style={{ width: 180, display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <ValidatorLogo identity={v.identity} moniker={v.moniker} fallbackSeed={v.operator_address} />
+                      <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{v.moniker}</span>
+                    </div>
+                    <div style={{ flex: 1, display: 'flex', gap: 4 }}>
+                      {displayHistory.map((item, idx) => {
+                        const isUp = item?.signed;
+                        return (
+                          <div 
+                            key={idx} 
+                            title={item ? `Block #${item.height}: ${isUp ? 'SIGNED' : 'MISSED'}` : 'Waiting for block...'}
+                            style={{ 
+                              flex: 1, height: 20, borderRadius: 2,
+                              background: item === null ? 'var(--s3)' : isUp ? 'var(--accent-green)' : 'rgba(255,59,92,0.8)',
+                              opacity: item === null ? 0.4 : isUp ? 1 : 0.8,
+                              cursor: item ? 'help' : 'default',
+                            }}
+                          ></div>
+                        );
+                      })}
+                    </div>
+                    <div style={{ width: 80, textAlign: 'right' }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--accent-green)' }}>{v.uptime}%</span>
+                      <p style={{ fontSize: 10, color: 'var(--text-muted)' }}>Reliability</p>
+                    </div>
                   </div>
-                  <div style={{ flex: 1, display: 'flex', gap: 3 }}>
-                    {Array.from({ length: 40 }).map((_, idx) => {
-                      const isMissed = (idx + v.rank) % 15 === 0;
-                      return (
-                        <div key={idx} style={{ 
-                          flex: 1, height: 20, borderRadius: 2,
-                          background: isMissed ? 'rgba(255,59,92,0.4)' : 'var(--accent-green)',
-                          opacity: isMissed ? 1 : 0.6
-                        }} title={isMissed ? 'Missed Block' : 'Signed Block'}></div>
-                      );
-                    })}
-                  </div>
-                  <div style={{ width: 80, textAlign: 'right' }}>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--accent-green)' }}>{v.uptime}</span>
-                    <p style={{ fontSize: 10, color: 'var(--text-muted)' }}>Reliability</p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
